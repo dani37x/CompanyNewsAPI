@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NexteerNewsAPI.Models;
 
-namespace NexteerNewsAPI.Data
+namespace CompanyNewsAPI.Data
 {
     public class DataContext : DbContext
     {

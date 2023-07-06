@@ -1,6 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using CompanyNewsAPI.Data;
-using CompanyNewsAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CompanyNewsAPI
 {
