@@ -1,4 +1,5 @@
 using CompanyNewsAPI.Data;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 
 namespace CompanyNewsAPI
@@ -12,6 +13,12 @@ namespace CompanyNewsAPI
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.AddCors(options => options.AddPolicy(name: "CompanyNewsUI",
+                policy =>
+                {
+                    policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod();
+                }));
+
             builder.Services.AddDbContext<DataContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -19,6 +26,7 @@ namespace CompanyNewsAPI
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            //builder.Services.AddHealthChecks();
 
             var app = builder.Build();
 
@@ -29,11 +37,16 @@ namespace CompanyNewsAPI
                 app.UseSwaggerUI();
             }
 
+            app.UseCors("CompanyNewsUI");
 
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapHealthChecks("/health");
+            //});
 
             app.MapControllers();
 

@@ -14,9 +14,9 @@ namespace CompanyNewsAPI.Models
         public string Description { get; set; }
         [Required]
         public DateTime Date { get; set; }
-        public int AuthorId { get; set; }
+        public int UserId { get; set; }
         [JsonIgnore]
-        [ForeignKey("AuthorId")]
-        public Author Author { get; set; }
+        [ForeignKey("UserId")]
+        public User User { get; set; }
     }
 }

@@ -2,9 +2,8 @@
 using CompanyNewsAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel;
 
-namespace CompanyPostsAPI.Controllers
+namespace CompanyNewsAPI.Controllers
 {
     [Tags("PostController")]
     [Route("api/[controller]")]
@@ -39,21 +38,21 @@ namespace CompanyPostsAPI.Controllers
         [HttpGet("author/{id}")]
         public async Task<ActionResult<List<Post>>> GetAuthorPosts(int id)
         {
-            var author = await _dataContext.Authors.FindAsync(id);
+            var author = await _dataContext.Users.FindAsync(id);
 
             if (author == null)
             {
                 return BadRequest($"0 result for id: {id}");
             }
 
-            return Ok(await _dataContext.Posts.Where(author => author.AuthorId == id).ToListAsync());
+            return Ok(await _dataContext.Posts.Where(user => user.UserId == id).ToListAsync());
         }
 
 
         [HttpPost]
         public async Task<ActionResult<Post>> AddThePosts(PostDto request)
         {
-            var author = await _dataContext.Authors.FindAsync(request.AuthorId);
+            var author = await _dataContext.Users.FindAsync(request.UserId);
             if (author == null)
             {
                 return NotFound();
@@ -63,9 +62,9 @@ namespace CompanyPostsAPI.Controllers
                 Title = request.Title,
                 Description = request.Description,
                 Date = DateTime.Now,
-                Author = author
+                User = author
             };
-            _dataContext.Posts.AddAsync(postToAdd);
+            await _dataContext.Posts.AddAsync(postToAdd);
             await _dataContext.SaveChangesAsync();
 
             return Ok("Object has been added");
@@ -80,13 +79,13 @@ namespace CompanyPostsAPI.Controllers
             {
                 return BadRequest($"0 result for id: {request.Id}");
             }
-            var author = await _dataContext.Authors.FindAsync(request.AuthorId);
+            var user = await _dataContext.Users.FindAsync(request.UserId);
 
             post.Id = request.Id;
             post.Title = request.Title;
             post.Description = request.Description;
-            post.AuthorId = request.AuthorId;
-            post.Author = author;
+            post.UserId = request.UserId;
+            post.User = user;
 
             await _dataContext.SaveChangesAsync();
             return Ok("Changes have been updated");

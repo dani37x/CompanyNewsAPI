@@ -9,7 +9,7 @@ namespace CompanyNewsAPI.Data
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
         public DbSet<Post> Posts => Set<Post>();
-        public DbSet<Author> Authors => Set<Author>();
+        public DbSet<User> Users => Set<User>();
 
     }
 }
