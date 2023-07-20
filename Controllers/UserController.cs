@@ -1,4 +1,5 @@
 ﻿using CompanyNewsAPI.Data;
+using CompanyNewsAPI.Interfaces;
 using CompanyNewsAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,74 +11,41 @@ namespace CompanyNewsAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly DataContext _dataContext;
+        private readonly IUserRepo _repo;
 
-        public UserController(DataContext dataContext)
+        public UserController(IUserRepo repo)
         {
-            _dataContext = dataContext;
+            _repo = repo;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<User>>> GetAllUsers()
+        public async Task<ActionResult> GetAllUsers()
         {
-            return Ok(await _dataContext.Users.ToListAsync());
+            return Ok(await _repo.GetAllUsers());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetSingleUser(int id)
+        public async Task<ActionResult> GetSingleUser(int id)
         {
-            var result = _dataContext.Users.FindAsync(id);
-
-            if (result == null)
-            {
-                return BadRequest($"0 result for id: {id}");
-            }
-            return Ok(await result);
+            return Ok(await _repo.GetSingleUser(id));
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<User>>> AddTheUser(User userToAdd)
+        public async Task<ActionResult> AddTheUser(User userToAdd)
         {
-            _dataContext.Users.Add(userToAdd);
-            await _dataContext.SaveChangesAsync();
-            return Ok(await _dataContext.Users.ToListAsync());
+            return Ok(await _repo.AddTheUser(userToAdd));
         }
 
         [HttpPut]
-        public async Task<ActionResult<User>> UpdateTheUser(User userToUpdate)
+        public async Task<ActionResult> UpdateTheUser(User userToUpdate)
         {
-            var result = await _dataContext.Users.FindAsync(userToUpdate.Id);
-
-            if (result == null)
-            {
-                return BadRequest($"0 result for id: {userToUpdate.Id}");
-            }
-
-
-
-            result.FirstName = userToUpdate.FirstName;
-            result.LastName = userToUpdate.LastName;
-            result.Team = userToUpdate.LastName;
-            result.Email = userToUpdate.Email;
-            result.Password = userToUpdate.Password;
-
-            await _dataContext.SaveChangesAsync();
-            return Ok(result);
+            return Ok(await _repo.UpdateTheUser(userToUpdate));
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<List<User>>> DeleteTheUser(int id)
+        public async Task<ActionResult> DeleteTheUser(int id)
         {
-            var result = await _dataContext.Users.FindAsync(id);
-
-            if (result == null)
-            {
-                return BadRequest($"0 result for id: {id}");
-            }
-
-            _dataContext.Users.Remove(result);
-            await _dataContext.SaveChangesAsync();
-            return Ok(await _dataContext.Users.ToListAsync());
+            return Ok(await _repo.DeleteTheUser(id));
         }
     }
 }

@@ -1,4 +1,6 @@
 using CompanyNewsAPI.Data;
+using CompanyNewsAPI.Interfaces;
+using CompanyNewsAPI.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +12,9 @@ namespace CompanyNewsAPI
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            builder.Services.AddTransient<IUserRepo, UserRepo>();
+            builder.Services.AddTransient<IPostRepo, PostRepo>();
+            //builder.Services.AddTransient<IAuthRepo, AuthRepo>();
 
             builder.Services.AddControllers();
             builder.Services.AddCors(options => options.AddPolicy(name: "CompanyNewsUI",
