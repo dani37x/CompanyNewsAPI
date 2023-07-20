@@ -1,110 +1,57 @@
 ﻿using CompanyNewsAPI.Data;
+using CompanyNewsAPI.Interfaces;
 using CompanyNewsAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel;
 
-namespace CompanyPostsAPI.Controllers
+namespace CompanyNewsAPI.Controllers
 {
     [Tags("PostController")]
     [Route("api/[controller]")]
     [ApiController]
     public class PostController : ControllerBase
     {
-        private readonly DataContext _dataContext;
+        private readonly IPostRepo _repo;
 
-        public PostController(DataContext dataContext)
+        public PostController(IPostRepo repo)
         {
-            _dataContext = dataContext;
+            _repo = repo;
         }
 
         [HttpGet]
-        public async Task<ActionResult<Post>> GetAllPosts()
+        public async Task<ActionResult> GetAllPosts()
         {
-            return Ok(await _dataContext.Posts.ToListAsync());
+            return Ok(await _repo.GetAllPosts());
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Post>> GetSinglePosts(int id)
+        public async Task<ActionResult> GetSinglePost(int id)
         {
-            var result = _dataContext.Posts.FindAsync(id);
-
-            if (result == null)
-            {
-                return BadRequest($"0 result for id: {id}");
-            }
-            return Ok(await result);
+            return Ok(await _repo.GetSinglePost(id));
         }
 
         [HttpGet("author/{id}")]
-        public async Task<ActionResult<List<Post>>> GetAuthorPosts(int id)
+        public async Task<ActionResult> GetAuthorPosts(int id)
         {
-            var author = await _dataContext.Authors.FindAsync(id);
-
-            if (author == null)
-            {
-                return BadRequest($"0 result for id: {id}");
-            }
-
-            return Ok(await _dataContext.Posts.Where(author => author.AuthorId == id).ToListAsync());
+            return Ok(await _repo.GetAuthorPosts(id));
         }
 
-
         [HttpPost]
-        public async Task<ActionResult<Post>> AddThePosts(PostDto request)
+        public async Task<ActionResult> AddThePost(PostDto postToAdd)
         {
-            var author = await _dataContext.Authors.FindAsync(request.AuthorId);
-            if (author == null)
-            {
-                return NotFound();
-            }
-            var postToAdd = new Post
-            {
-                Title = request.Title,
-                Description = request.Description,
-                Date = DateTime.Now,
-                Author = author
-            };
-            _dataContext.Posts.AddAsync(postToAdd);
-            await _dataContext.SaveChangesAsync();
-
-            return Ok("Object has been added");
+            return Ok(await _repo.AddThePost(postToAdd));
         }
 
         [HttpPut]
-        public async Task<ActionResult<Post>> UpdateThePosts(PostDto request)
+        public async Task<ActionResult> UpdateThePost(PostDto postToUpdate)
         {
-            var post = await _dataContext.Posts.FindAsync(request.Id);
-
-            if (post == null)
-            {
-                return BadRequest($"0 result for id: {request.Id}");
-            }
-            var author = await _dataContext.Authors.FindAsync(request.AuthorId);
-
-            post.Id = request.Id;
-            post.Title = request.Title;
-            post.Description = request.Description;
-            post.AuthorId = request.AuthorId;
-            post.Author = author;
-
-            await _dataContext.SaveChangesAsync();
-            return Ok("Changes have been updated");
+            return Ok(await _repo.UpdateThePost(postToUpdate));
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<List<Post>>> DeleteThePosts(int id)
+        public async Task<ActionResult> DeleteThePost(int id)
         {
-            var result = await _dataContext.Posts.FindAsync(id);
-
-            if (result == null)
-            {
-                return BadRequest($"0 result for id: {id}");
-            }
-
-            _dataContext.Posts.Remove(result);
-            await _dataContext.SaveChangesAsync();
-            return Ok($"Row {id} has been deleted");
+            return Ok(await _repo.DeleteThePost(id));
         }
     }
 }
