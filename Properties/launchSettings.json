@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "NexteerNewsAPI": {
+    "CompanyNewsAPI": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

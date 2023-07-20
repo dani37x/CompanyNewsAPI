@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using NexteerNewsAPI.Models;
+﻿using CompanyNewsAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CompanyNewsAPI.Data
 {
@@ -8,7 +8,8 @@ namespace CompanyNewsAPI.Data
 
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
-        public DbSet<CompanyNews> News => Set<CompanyNews>();
+        public DbSet<Post> Posts => Set<Post>();
+        public DbSet<User> Users => Set<User>();
 
     }
 }
