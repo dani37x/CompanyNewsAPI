@@ -1,4 +1,5 @@
 ﻿using CompanyNewsAPI.Data;
+using CompanyNewsAPI.DTO;
 using CompanyNewsAPI.Interfaces;
 using CompanyNewsAPI.Models;
 using Microsoft.EntityFrameworkCore;
@@ -39,61 +40,56 @@ namespace CompanyNewsAPI.Repositories
         public async Task<bool> AddThePost(PostDto request)
         {
             var author = await _dataContext.Users.FindAsync(request.UserId);
-            if (author != null)
+
+            if (author == null)
             {
-                var postToAdd = new Post
-                {
-                    Title = request.Title,
-                    Description = request.Description,
-                    Date = DateTime.Now,
-                    User = author
-                };
-                await _dataContext.Posts.AddAsync(postToAdd);
+                return false;
             }
 
-            if (await _dataContext.SaveChangesAsync() > 0)
+            var postToAdd = new Post
             {
-                return true;
-            }
-            return false;
+                Title = request.Title,
+                Description = request.Description,
+                Date = DateTime.Now,
+                User = author
+            };
+
+            await _dataContext.Posts.AddAsync(postToAdd);
+            await _dataContext.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> UpdateThePost(PostDto request)
         {
             var post = await _dataContext.Posts.FindAsync(request.Id);
 
-            if (post != null)
+            if (post == null)
             {
-                var user = await _dataContext.Users.FindAsync(request.UserId);
+                return false;
+            }
 
-                post.Id = request.Id;
-                post.Title = request.Title;
-                post.Description = request.Description;
-                post.UserId = request.UserId;
-                post.User = user;
-            }
-  
-            if (await _dataContext.SaveChangesAsync() > 0)
-            {
-                return true;
-            }
-            return false;
+            var user = await _dataContext.Users.FindAsync(request.UserId);
+            post.Id = request.Id;
+            post.Title = request.Title;
+            post.Description = request.Description;
+            post.UserId = request.UserId;
+            post.User = user;
+            await _dataContext.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> DeleteThePost(int id)
         {
             var result = await _dataContext.Posts.FindAsync(id);
 
-            if (result != null)
+            if (result == null)
             {
-                _dataContext.Posts.Remove(result);
+                return false;
             }
 
-            if (await _dataContext.SaveChangesAsync() > 0)
-            {
-                return true;
-            }
-            return false;
+            _dataContext.Posts.Remove(result);
+            await _dataContext.SaveChangesAsync();
+            return true;
         }
 
     }

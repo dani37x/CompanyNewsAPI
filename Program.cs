@@ -14,14 +14,11 @@ namespace CompanyNewsAPI
 
             builder.Services.AddTransient<IUserRepo, UserRepo>();
             builder.Services.AddTransient<IPostRepo, PostRepo>();
-            //builder.Services.AddTransient<IAuthRepo, AuthRepo>();
+            builder.Services.AddTransient<IAuthRepo, AuthRepo>();
 
             builder.Services.AddControllers();
             builder.Services.AddCors(options => options.AddPolicy(name: "CompanyNewsUI",
-                policy =>
-                {
-                    policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod();
-                }));
+                policy => policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod()));
 
             builder.Services.AddDbContext<DataContext>(options =>
             {
