@@ -1,4 +1,5 @@
-﻿using CompanyNewsAPI.Models;
+﻿using CompanyNewsAPI.DTO;
+using CompanyNewsAPI.Models;
 
 namespace CompanyNewsAPI.Interfaces
 {

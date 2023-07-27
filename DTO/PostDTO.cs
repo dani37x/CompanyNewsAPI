@@ -1,4 +1,4 @@
-﻿namespace CompanyNewsAPI.Models
+﻿namespace CompanyNewsAPI.DTO
 {
     public class PostDto
     {
