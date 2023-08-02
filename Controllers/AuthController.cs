@@ -18,9 +18,22 @@ namespace CompanyNewsAPI.Controllers
 
         [HttpPost]
         [Route("Register")]
-        public async Task<ActionResult> Register(User user)
+        public async Task<ActionResult> RegisterUser(User user)
         {
-            return Ok(await _authRepo.Register(user));
+            return Ok(await _authRepo.RegisterUser(user));
+        }
+
+        [HttpPost]
+        [Route("Register/Confirmation")]
+        public async Task<ActionResult> RegisterConfirmation(string key)
+        {
+            return Ok(await _authRepo.RegisterConfirmation(key));
+        }
+        [HttpPost]
+        [Route("Login")]
+        public async Task<ActionResult> LoginUser(Login login)
+        {
+            return Ok(await _authRepo.LoginUser(login));
         }
     }
 }

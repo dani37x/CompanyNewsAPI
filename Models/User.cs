@@ -12,15 +12,15 @@ namespace CompanyNewsAPI.Models
         [MinimumLengthValidator(minLength: 3)]
         public string FirstName { get; set; }
         [Required(ErrorMessage = "Last name is required")]
-        [MinimumLengthValidator(minLength: 3)]
+        //[MinimumLengthValidator(minLength: 3)]
         public string LastName { get; set; }
         [Required(ErrorMessage = "Email is required")]
-        [MinimumLengthValidator(minLength: 5)]
-        [EmailValidator(ErrorMessage = "Email must contain dot and at and be in correct format")]
+        //[MinimumLengthValidator(minLength: 5)]
+        //[EmailValidator(ErrorMessage = "Email must contain dot and at and be in correct format")]
         public string Email { get; set; }
         [Required]
-        [MinimumLengthValidator(minLength: 9)]
-        [PasswordValidator(ErrorMessage = "Password is not in correct format")]
+        //[MinimumLengthValidator(minLength: 9)]
+        //[PasswordValidator(ErrorMessage = "Password is not in correct format")]
         public string Password { get; set; }
 
         [JsonIgnore]
