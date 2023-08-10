@@ -1,6 +1,6 @@
 ﻿using CompanyNewsAPI.Data;
+using CompanyNewsAPI.DTO;
 using CompanyNewsAPI.Interfaces;
-using CompanyNewsAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

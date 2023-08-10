@@ -33,37 +33,31 @@ namespace CompanyNewsAPI.Repositories
         {
             var user = await _dataContext.Users.FindAsync(userToUpdate.Id);
 
-            if (user != null)
+            if (user == null)
             {
-                user.FirstName = userToUpdate.FirstName;
-                user.LastName = userToUpdate.LastName;
-                user.Team = userToUpdate.LastName;
-                user.Email = userToUpdate.Email;
-                user.Password = userToUpdate.Password;
+                return false;
             }
 
-            if (await _dataContext.SaveChangesAsync() > 0)
-            {
-                return true;
-            }
-            return false;
+            user.FirstName = userToUpdate.FirstName;
+            user.LastName = userToUpdate.LastName;
+            user.Email = userToUpdate.Email;
+            user.Password = userToUpdate.Password;
+            await _dataContext.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> DeleteTheUser(int id)
         {
             var user = await _dataContext.Users.FindAsync(id);
 
-            if (user != null)
+            if (user == null)
             {
-                _dataContext.Users.Remove(user);
-                await _dataContext.SaveChangesAsync();
+                return false;
             }
-           
-            if ( await _dataContext.SaveChangesAsync() > 0)
-            {
-                return true;
-            }
-            return false;
+
+            _dataContext.Users.Remove(user);
+            await _dataContext.SaveChangesAsync();
+            return true;
         }
 
     }
