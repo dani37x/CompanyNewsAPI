@@ -22,7 +22,6 @@ namespace CompanyNewsAPI
             builder.Services.AddTransient<IUserRepo, UserRepo>();
             builder.Services.AddTransient<IPostRepo, PostRepo>();
             builder.Services.AddTransient<IAuthRepo, AuthRepo>();
-            builder.Services.AddTransient<IUIRepo, UIRepo>();
 
             builder.Services.AddSingleton(provider =>
             {
