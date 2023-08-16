@@ -31,9 +31,14 @@ namespace CompanyNewsAPI.Controllers
         }
         [HttpPost]
         [Route("Login")]
-        public async Task<ActionResult> LoginUser(Login login)
+        public async Task<ActionResult> LoginUser(Login loginData)
         {
-            return Ok(await _authRepo.LoginUser(login));
+            var token = await _authRepo.LoginUser(loginData);
+            if (token.Length > 0)
+            {
+                return Ok(new { Token = token });
+            }
+            return BadRequest(new { Message = "Invalid email or password" });
         }
     }
 }

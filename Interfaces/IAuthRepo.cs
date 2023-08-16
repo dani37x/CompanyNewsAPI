@@ -6,7 +6,7 @@ namespace CompanyNewsAPI.Interfaces
     {
         public Task<bool> RegisterUser(User user);
         public Task<bool> RegisterConfirmation(string key);
-        public Task<bool> LoginUser(Login login);
+        public Task<string> LoginUser(Login login);
         public Task<bool> NewPasswordUser(User user);
     }
 }

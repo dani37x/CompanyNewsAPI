@@ -4,6 +4,10 @@ using CompanyNewsAPI.Interfaces;
 using CompanyNewsAPI.Models;
 using CompanyNewsAPI.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using System.Text.Json;
 namespace CompanyNewsAPI.Repositories
 {
@@ -11,13 +15,15 @@ namespace CompanyNewsAPI.Repositories
     {
         private readonly DataContext _dataContext;
         private readonly EmailService _emailService;
+        private readonly IConfiguration _configuration;
         private readonly string _path = @"keys.json";
 
 
-        public AuthRepo(DataContext dataContext, EmailService emailService)
+        public AuthRepo(DataContext dataContext, EmailService emailService, IConfiguration configuration)
         {
             _dataContext = dataContext;
             _emailService = emailService;
+            _configuration = configuration;
         }
 
         public async Task<bool> RegisterUser(User user)
@@ -31,8 +37,8 @@ namespace CompanyNewsAPI.Repositories
 
             Register registerModel = new Register { Key = KeyGenerator.RandomStr(length: 6), User = user };
             registerModel.User.Email = "daniel.krusinski@nexteer.com";
-            var modelData = JsonSerializer.Serialize(registerModel) + ",\n";
-            File.AppendAllText(_path, modelData);
+            var modelData = "\n" + JsonSerializer.Serialize(registerModel) + ",";
+            FileService.AppendAllText(_path, modelData);
             await _emailService.SendEmailAsync(registerModel.User.Email,
                                                "Test",
                                                registerModel.Key);
@@ -52,7 +58,7 @@ namespace CompanyNewsAPI.Repositories
                     var registerModel = JsonSerializer.Deserialize<Register>(modelData);
                     var existingUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == registerModel.User.Email);
 
-                    if (DateTime.Now < registerModel.Time && existingUser == null)
+                    if (DateTime.Now < registerModel.Date && existingUser == null)
                     {
                         User user = registerModel.User;
                         _dataContext.Add(user);
@@ -63,21 +69,42 @@ namespace CompanyNewsAPI.Repositories
             }
             return false;
         }
-        public async Task<bool> LoginUser(Login login)
+        public async Task<string> LoginUser(Login loginData)
         {
-            var checkUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == login.Email && u.Password == login.Password);
+            var checkUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == loginData.Email && u.Password == loginData.Password);
 
             if (checkUser != null)
             {
-                return true;
+                return GenerateJSONWebToken(loginData);
             }
-            return false;
-
+            return "";
         }
 
         public async Task<bool> NewPasswordUser(User user)
         {
             throw new NotImplementedException();
         }
+
+        public string GenerateJSONWebToken(Login loginData)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("Jwt:Key")));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Email, loginData.Email),
+                new Claim(ClaimTypes.Role, "user")
+             };
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration.GetValue<string>("Jwt:Issuer"),
+                audience: _configuration.GetValue<string>("Jwt:Audience"),
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(120),
+                signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
     }
 }
+
