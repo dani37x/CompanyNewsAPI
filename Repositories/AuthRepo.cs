@@ -16,7 +16,8 @@ namespace CompanyNewsAPI.Repositories
         private readonly DataContext _dataContext;
         private readonly EmailService _emailService;
         private readonly IConfiguration _configuration;
-        private readonly string _path = @"keys.json";
+        private readonly string _registratonKeysPath = @"registrationKeys.json";
+        private readonly string _newPasswordKeysPath = @"newPasswordKeys.json";
 
 
         public AuthRepo(DataContext dataContext, EmailService emailService, IConfiguration configuration)
@@ -35,19 +36,19 @@ namespace CompanyNewsAPI.Repositories
                 return false;
             }
 
-            Register registerModel = new Register { Key = KeyGenerator.RandomStr(length: 6), User = user };
+            Register registerModel = new Register { Key = await KeyGenerator.RandomStr(path: "registrationKeys.json", length: 6), User = user };
             registerModel.User.Email = "daniel.krusinski@nexteer.com";
             var modelData = "\n" + JsonSerializer.Serialize(registerModel) + ",";
-            FileService.AppendAllText(_path, modelData);
+            await FileService.AppendAllTextAsync(_registratonKeysPath, modelData);
             await _emailService.SendEmailAsync(registerModel.User.Email,
                                                "Test",
                                                registerModel.Key);
             return true;
         }
 
-        public async Task<bool> RegisterConfirmation(string key)
+        public async Task<bool> RegisterUserConfirmation(string key)
         {
-            var data = File.ReadAllLines(_path);
+            var data = File.ReadAllLines(_registratonKeysPath);
             string[] updatedData;
 
             foreach (var line in data)
@@ -80,9 +81,26 @@ namespace CompanyNewsAPI.Repositories
             return "";
         }
 
-        public async Task<bool> NewPasswordUser(User user)
+        public async Task<bool> NewPasswordUser(NewPassword newPassword)
         {
             throw new NotImplementedException();
+
+        }
+        public async Task<bool> NewPasswordUserConfirmation(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> ChangePassword(NewPassword newPassword)
+        {
+            var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == newPassword.Email);
+            if (user != null)
+            {
+                user.Password = newPassword.Password;
+                await _dataContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
         public string GenerateJSONWebToken(Login loginData)
@@ -100,7 +118,7 @@ namespace CompanyNewsAPI.Repositories
                 issuer: _configuration.GetValue<string>("Jwt:Issuer"),
                 audience: _configuration.GetValue<string>("Jwt:Audience"),
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(120),
+                expires: DateTime.Now.AddDays(1),
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);

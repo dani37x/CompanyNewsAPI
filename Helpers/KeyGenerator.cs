@@ -8,9 +8,8 @@ namespace CompanyNewsAPI.Generators
         private static readonly string _bigChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         private static readonly string _numbers = "0123456789";
         private static readonly string _specialChars = "!@#$%^&*()";
-        private static readonly string _path = @"keys.json";
 
-        public async static Task<string> RandomStr(int length)
+        public async static Task<string> RandomStr(string path, int length)
         {
             var everyChar = _smallChars + _bigChars + _numbers + _specialChars;
             List<char> chars = new List<char>(everyChar);
@@ -22,10 +21,10 @@ namespace CompanyNewsAPI.Generators
                 randomString += chars[random.Next(chars.Count - 1)];
             }
 
-            var existingKeys = await FileService.ReadFileAsync(_path);
+            var existingKeys = await FileService.ReadFileAsync(path);
             if (existingKeys.Contains(randomString))
             {
-                return await RandomStr(length);
+                return await RandomStr(path, length);
             }
 
             return randomString;

@@ -21,7 +21,7 @@
             try
             {
                 _fileSemaphore.WaitOne();
-                return  File.ReadAllLines(path);
+                return File.ReadAllLines(path);
             }
             finally
             {
@@ -45,19 +45,7 @@
             try
             {
                 _fileSemaphore.WaitOne();
-                File.AppendAllTextAsync(path, data);
-            }
-            finally
-            {
-                _fileSemaphore.Release();
-            }
-        }
-        public async static Task WriteAllLinesAsync(string path, List<string> data)
-        {
-            try
-            {
-                _fileSemaphore.WaitOne();
-                File.WriteAllLinesAsync(path, data);
+                await File.AppendAllTextAsync(path, data);
             }
             finally
             {
@@ -70,6 +58,18 @@
             {
                 _fileSemaphore.WaitOne();
                 File.WriteAllLines(path, data);
+            }
+            finally
+            {
+                _fileSemaphore.Release();
+            }
+        }
+        public async static Task WriteAllLinesAsync(string path, List<string> data)
+        {
+            try
+            {
+                _fileSemaphore.WaitOne();
+                await File.WriteAllLinesAsync(path, data);
             }
             finally
             {
