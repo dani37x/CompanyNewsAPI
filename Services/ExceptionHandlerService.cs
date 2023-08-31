@@ -24,7 +24,7 @@ namespace CompanyNewsAPI.Services
             {
                 _logger.LogError(e, e.Message);
                 Error errorData = new Error { Message = e.ToString() };
-                FileService.AppendAllText(@"errors.json", "\n" + JsonSerializer.Serialize(errorData) + ",");
+                await FileService.AppendAllTextAsync(@"errors.json", "\n" + JsonSerializer.Serialize(errorData) + ",");
             }
         }
     }

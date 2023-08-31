@@ -1,5 +1,6 @@
 ﻿using CompanyNewsAPI.Interfaces;
 using CompanyNewsAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyNewsAPI.Controllers
@@ -16,6 +17,7 @@ namespace CompanyNewsAPI.Controllers
             _authRepo = authRepo;
         }
 
+        [Authorize(Roles = "user")]
         [HttpPost]
         [Route("Register")]
         public async Task<ActionResult> RegisterUser(User user)
@@ -25,9 +27,9 @@ namespace CompanyNewsAPI.Controllers
 
         [HttpPost]
         [Route("Register/Confirmation")]
-        public async Task<ActionResult> RegisterConfirmation(string key)
+        public async Task<ActionResult> RegisterUserConfirmation(string key)
         {
-            return Ok(await _authRepo.RegisterConfirmation(key));
+            return Ok(await _authRepo.RegisterUserConfirmation(key));
         }
         [HttpPost]
         [Route("Login")]
@@ -39,6 +41,18 @@ namespace CompanyNewsAPI.Controllers
                 return Ok(new { Token = token });
             }
             return BadRequest(new { Message = "Invalid email or password" });
+        }
+        [HttpPost]
+        [Route("NewPassword")]
+        public async Task<ActionResult> NewPasswordUser(NewPassword newPassword)
+        {
+            return BadRequest();
+        }
+        [HttpPost]
+        [Route("NewPassword/Confirmation")]
+        public async Task<ActionResult> NewPasswordUserConfirmation(string key)
+        {
+            return BadRequest();
         }
     }
 }
