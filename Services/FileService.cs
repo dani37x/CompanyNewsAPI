@@ -11,6 +11,10 @@
                 _fileSemaphore.WaitOne();
                 return await File.ReadAllLinesAsync(path);
             }
+            catch (Exception)
+            {
+                throw;
+            }
             finally
             {
                 _fileSemaphore.Release();
@@ -22,6 +26,10 @@
             {
                 _fileSemaphore.WaitOne();
                 return File.ReadAllLines(path);
+            }
+            catch (Exception)
+            {
+                throw;
             }
             finally
             {
@@ -35,6 +43,10 @@
                 _fileSemaphore.WaitOne();
                 return await File.ReadAllTextAsync(path);
             }
+            catch (Exception)
+            {
+                throw;
+            }
             finally
             {
                 _fileSemaphore.Release();
@@ -46,6 +58,10 @@
             {
                 _fileSemaphore.WaitOne();
                 await File.AppendAllTextAsync(path, data);
+            }
+            catch (Exception)
+            {
+                throw;
             }
             finally
             {
@@ -59,6 +75,10 @@
                 _fileSemaphore.WaitOne();
                 File.WriteAllLines(path, data);
             }
+            catch (Exception)
+            {
+                throw;
+            }
             finally
             {
                 _fileSemaphore.Release();
@@ -70,6 +90,10 @@
             {
                 _fileSemaphore.WaitOne();
                 await File.WriteAllLinesAsync(path, data);
+            }
+            catch (Exception)
+            {
+                throw;
             }
             finally
             {

@@ -23,8 +23,15 @@ namespace CompanyNewsAPI.Services
                 Credentials = new NetworkCredential(_email, _password)
             };
 
-            return client.SendMailAsync(
-                new MailMessage(from: _email, to: email, subject, message));
+            try
+            {
+                return client.SendMailAsync(
+                    new MailMessage(from: _email, to: email, subject, message));
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
