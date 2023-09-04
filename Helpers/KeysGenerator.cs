@@ -1,8 +1,9 @@
 ﻿using CompanyNewsAPI.Services;
+using System.Text;
 
 namespace CompanyNewsAPI.Generators
 {
-    public class KeyGenerator
+    public class KeysGenerator
     {
         private static readonly string _smallChars = "abcdefghijklmnopqrstuvwxyz";
         private static readonly string _bigChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -14,20 +15,20 @@ namespace CompanyNewsAPI.Generators
             var everyChar = _smallChars + _bigChars + _numbers + _specialChars;
             List<char> chars = new List<char>(everyChar);
             var random = new Random();
-            var randomString = "";
+            var sb = new StringBuilder();
 
             for (int i = 0; i < length; i++)
             {
-                randomString += chars[random.Next(chars.Count - 1)];
+                sb.Append(chars[random.Next(chars.Count - 1)]);
             }
 
             var existingKeys = await FileService.ReadFileAsync(path);
-            if (existingKeys.Contains(randomString))
+            if (existingKeys.Contains(sb.ToString()))
             {
                 return await RandomStr(path, length);
             }
 
-            return randomString;
+            return sb.ToString();
         }
     }
 }
