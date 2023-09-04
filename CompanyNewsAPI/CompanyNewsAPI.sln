@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33815.320
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompanyNewsAPI", "CompanyNewsAPI.csproj", "{81BBBD33-76B8-4BD0-B488-A2B4C3EFFD93}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompanyNewsAPI.Tests", "..\CompanyNewsAPI.Tests\CompanyNewsAPI.Tests.csproj", "{1D9C4735-0CCB-475B-8FAC-9856E8635808}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{81BBBD33-76B8-4BD0-B488-A2B4C3EFFD93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81BBBD33-76B8-4BD0-B488-A2B4C3EFFD93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81BBBD33-76B8-4BD0-B488-A2B4C3EFFD93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81BBBD33-76B8-4BD0-B488-A2B4C3EFFD93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D9C4735-0CCB-475B-8FAC-9856E8635808}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D9C4735-0CCB-475B-8FAC-9856E8635808}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D9C4735-0CCB-475B-8FAC-9856E8635808}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D9C4735-0CCB-475B-8FAC-9856E8635808}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {654929AF-4C13-49F4-BB9B-9B56561A1E33}
+	EndGlobalSection
+EndGlobal
