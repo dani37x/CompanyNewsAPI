@@ -367,3 +367,6 @@ Migrations/
 
 # json files
 *.json
+
+# Tests debug files
+CompanyNewsAPI.Tests/obj/Debug/*
