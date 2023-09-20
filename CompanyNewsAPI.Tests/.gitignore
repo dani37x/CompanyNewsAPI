@@ -369,6 +369,5 @@ Migrations/
 *.json
 
 #  debug files
-obj/Debug/*
-
-bin/Debug/*
+bin/
+obj/
