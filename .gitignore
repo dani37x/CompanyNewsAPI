@@ -368,5 +368,5 @@ Migrations/
 # json files
 *.json
 
-# debug files
-obj/Debug/*
+# Tests debug files
+CompanyNewsAPI.Tests/obj/Debug/*
