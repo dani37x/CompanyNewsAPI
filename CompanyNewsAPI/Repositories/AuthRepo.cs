@@ -80,6 +80,18 @@ namespace CompanyNewsAPI.Repositories
             return "";
         }
 
+        public async Task<bool> ChangePassword(NewPassword newPassword)
+        {
+            var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == newPassword.Email);
+            if (user == null)
+            {
+                return false;
+            }
+            user.Password = newPassword.Password;
+            await _dataContext.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<bool> NewPasswordUser(NewPassword newPassword)
         {
             var checkUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == newPassword.Email);
@@ -89,8 +101,10 @@ namespace CompanyNewsAPI.Repositories
             }
             var key = await KeysGenerator.RandomStr(_newPasswordKeysPath, 6);
             newPassword.Key = key;
-            var newPasswordModel = JsonSerializer.Serialize(newPassword);
-            await FileService.AppendAllTextAsync(_newPasswordKeysPath, newPasswordModel);
+            newPassword.Date = DateTime.Now.AddMinutes(15);
+            //newPassword.Email = "daniel.krusinski@nexteer.com";
+            var modelData = "\n" + JsonSerializer.Serialize(newPassword) + ",";
+            await FileService.AppendAllTextAsync(_newPasswordKeysPath, modelData);
             await _emailService.SendEmailAsync(newPassword.Email, "New Password key", key);
             return true;
         }
@@ -116,19 +130,6 @@ namespace CompanyNewsAPI.Repositories
             }
             return false;
         }
-
-        public async Task<bool> ChangePassword(NewPassword newPassword)
-        {
-            var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == newPassword.Email);
-            if (user == null)
-            {
-                return false;
-            }
-            user.Password = newPassword.Password;
-            await _dataContext.SaveChangesAsync();
-            return true;
-        }
-
         public string GenerateJSONWebToken(Login loginData)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("Jwt:Key")));

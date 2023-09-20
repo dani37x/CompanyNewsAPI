@@ -7,7 +7,7 @@ namespace CompanyNewsAPI.Tests
     [TestClass]
     public class KeyGeneratorTests
     {
-        private string _keysGeneratorTests = @"keysGeneratorTests.txt";
+        private string _keysGeneratorTests = @"keysGeneratorTests.json";
 
         [TestMethod]
         [DataRow(1)]

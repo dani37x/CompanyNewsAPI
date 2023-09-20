@@ -17,7 +17,7 @@ namespace CompanyNewsAPI.Controllers
             _authRepo = authRepo;
         }
 
-        [Authorize(Roles = "user")]
+        //[Authorize(Roles = "user")]
         [HttpPost]
         [Route("Register")]
         public async Task<ActionResult> RegisterUser(User user)
@@ -42,17 +42,26 @@ namespace CompanyNewsAPI.Controllers
             }
             return BadRequest(new { Message = "Invalid email or password" });
         }
+
+        [HttpPost]
+        //[Authorize(Roles ="user")]
+        [Route("ChangePassword")]
+        public async Task<ActionResult> ChangePassword(NewPassword newPassword)
+        {
+            return Ok(await _authRepo.ChangePassword(newPassword));
+        }
+
         [HttpPost]
         [Route("NewPassword")]
         public async Task<ActionResult> NewPasswordUser(NewPassword newPassword)
         {
-            return BadRequest();
+            return Ok(await _authRepo.NewPasswordUser(newPassword));
         }
         [HttpPost]
         [Route("NewPassword/Confirmation")]
         public async Task<ActionResult> NewPasswordUserConfirmation(string key)
         {
-            return BadRequest();
+            return Ok(await _authRepo.NewPasswordUserConfirmation(key));
         }
     }
 }

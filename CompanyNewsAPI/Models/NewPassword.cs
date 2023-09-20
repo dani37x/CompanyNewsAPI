@@ -2,10 +2,10 @@
 {
     public class NewPassword
     {
-        public string? Key { get; set; }
+        public string? Key { get; set; } = string.Empty;
         public string Email { get; set; }
         public string Password { get; set; }
-        public DateTime Date { get; set; } = DateTime.Now.AddMinutes(15);
+        public DateTime? Date { get; set; }
 
     }
 }
