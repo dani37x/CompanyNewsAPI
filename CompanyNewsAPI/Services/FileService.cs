@@ -68,6 +68,22 @@
                 _fileSemaphore.Release();
             }
         }
+        public static void WriteAllText(string path, string data)
+        {
+            try
+            {
+                _fileSemaphore.WaitOne();
+                File.WriteAllText(path, data);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                _fileSemaphore.Release();
+            }
+        }
         public static void WriteAllLines(string path, List<string> data)
         {
             try

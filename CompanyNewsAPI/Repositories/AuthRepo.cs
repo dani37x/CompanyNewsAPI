@@ -1,5 +1,6 @@
 ﻿using CompanyNewsAPI.Data;
 using CompanyNewsAPI.Generators;
+using CompanyNewsAPI.Helpers;
 using CompanyNewsAPI.Interfaces;
 using CompanyNewsAPI.Models;
 using CompanyNewsAPI.Services;
@@ -7,8 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
+
 namespace CompanyNewsAPI.Repositories
 {
     public class AuthRepo : IAuthRepo
@@ -18,7 +22,6 @@ namespace CompanyNewsAPI.Repositories
         private readonly IConfiguration _configuration;
         private readonly string _registratonKeysPath = @"registrationKeys.json";
         private readonly string _newPasswordKeysPath = @"newPasswordKeys.json";
-
 
         public AuthRepo(DataContext dataContext, EmailService emailService, IConfiguration configuration)
         {
@@ -37,6 +40,7 @@ namespace CompanyNewsAPI.Repositories
             }
 
             Register registerModel = new Register { Key = await KeysGenerator.RandomStr(path: "registrationKeys.json", length: 6), User = user };
+            registerModel.User.Password = SecurityGenerators.ComputeSha256Hash(registerModel.User.Password + registerModel.User.FirstName);
             registerModel.User.Email = "daniel.krusinski@nexteer.com";
             var modelData = "\n" + JsonSerializer.Serialize(registerModel) + ",";
             await FileService.AppendAllTextAsync(_registratonKeysPath, modelData);
@@ -71,13 +75,28 @@ namespace CompanyNewsAPI.Repositories
         }
         public async Task<string> LoginUser(Login loginData)
         {
-            var checkUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == loginData.Email && u.Password == loginData.Password);
-
-            if (checkUser != null)
+            var getUser = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == loginData.Email);
+            if (getUser != null)
             {
-                return GenerateJSONWebToken(loginData);
+                var password = SecurityGenerators.ComputeSha256Hash(loginData.Password + getUser.FirstName);
+                if (getUser.Password == password)
+                {
+                    return SecurityGenerators.GenerateJSONWebToken(loginData, _configuration);
+                }
             }
             return "";
+        }
+
+        public async Task<bool> ChangePassword(NewPassword newPassword)
+        {
+            var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == newPassword.Email);
+            if (user == null)
+            {
+                return false;
+            }
+            user.Password = SecurityGenerators.ComputeSha256Hash(newPassword.Password + user.FirstName);
+            await _dataContext.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> NewPasswordUser(NewPassword newPassword)
@@ -88,9 +107,12 @@ namespace CompanyNewsAPI.Repositories
                 return false;
             }
             var key = await KeysGenerator.RandomStr(_newPasswordKeysPath, 6);
+            newPassword.Password = SecurityGenerators.ComputeSha256Hash(newPassword.Password + checkUser.FirstName);
             newPassword.Key = key;
-            var newPasswordModel = JsonSerializer.Serialize(newPassword);
-            await FileService.AppendAllTextAsync(_newPasswordKeysPath, newPasswordModel);
+            newPassword.Date = DateTime.Now.AddMinutes(15);
+            //newPassword.Email = "daniel.krusinski@nexteer.com";
+            var modelData = "\n" + JsonSerializer.Serialize(newPassword) + ",";
+            await FileService.AppendAllTextAsync(_newPasswordKeysPath, modelData);
             await _emailService.SendEmailAsync(newPassword.Email, "New Password key", key);
             return true;
         }
@@ -115,39 +137,6 @@ namespace CompanyNewsAPI.Repositories
                 }
             }
             return false;
-        }
-
-        public async Task<bool> ChangePassword(NewPassword newPassword)
-        {
-            var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == newPassword.Email);
-            if (user == null)
-            {
-                return false;
-            }
-            user.Password = newPassword.Password;
-            await _dataContext.SaveChangesAsync();
-            return true;
-        }
-
-        public string GenerateJSONWebToken(Login loginData)
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("Jwt:Key")));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Email, loginData.Email),
-                new Claim(ClaimTypes.Role, "user")
-             };
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration.GetValue<string>("Jwt:Issuer"),
-                audience: _configuration.GetValue<string>("Jwt:Audience"),
-                claims: claims,
-                expires: DateTime.Now.AddDays(1),
-                signingCredentials: credentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
