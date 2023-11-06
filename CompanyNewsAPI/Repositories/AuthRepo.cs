@@ -49,7 +49,6 @@ namespace CompanyNewsAPI.Repositories
                                                registerModel.Key);
             return true;
         }
-
         public async Task<bool> RegisterUserConfirmation(string key)
         {
             var data = File.ReadAllLines(_registratonKeysPath);
@@ -79,6 +78,7 @@ namespace CompanyNewsAPI.Repositories
             if (getUser != null)
             {
                 var password = SecurityGenerators.ComputeSha256Hash(loginData.Password + getUser.FirstName);
+                await Console.Out.WriteLineAsync(password);
                 if (getUser.Password == password)
                 {
                     return SecurityGenerators.GenerateJSONWebToken(loginData, _configuration);

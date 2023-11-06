@@ -22,6 +22,9 @@ namespace CompanyNewsAPI.Models
         //[MinimumLengthValidator(minLength: 9)]
         //[PasswordValidator(ErrorMessage = "Password is not in correct format")]
         public string Password { get; set; }
+        //[Required]
+        //[RoleValidator(ErrorMessage = "")]
+        //public string Role { get; set; }
 
         [JsonIgnore]
         public ICollection<Post>? Posts { get; set; }

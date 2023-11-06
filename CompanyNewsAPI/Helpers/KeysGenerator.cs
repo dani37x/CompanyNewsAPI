@@ -8,7 +8,7 @@ namespace CompanyNewsAPI.Generators
         private static readonly string _smallChars = "abcdefghijklmnopqrstuvwxyz";
         private static readonly string _bigChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         private static readonly string _numbers = "0123456789";
-        private static readonly string _specialChars = "!@#$%^&*()";
+        private static readonly string _specialChars = "!@#$%^*()";
 
         public async static Task<string> RandomStr(string path, int length)
         {

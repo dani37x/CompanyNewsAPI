@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
 namespace CompanyNewsAPI
@@ -40,8 +41,13 @@ namespace CompanyNewsAPI
             builder.Services.AddHangfireServer();
 
             // JSON Web Token Authentication settings
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap.Clear();
+
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
             {
+                //options.MapInboundClaims = false;
+                //options.map
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -55,6 +61,7 @@ namespace CompanyNewsAPI
                 options.SaveToken = true;
             });
 
+             // Registration API Controllers
             builder.Services.AddControllers();
 
             // Cross-Origin Resource Sharing settings
@@ -65,6 +72,7 @@ namespace CompanyNewsAPI
             builder.Services.AddDbContext<DataContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+                options.EnableSensitiveDataLogging();                
             });
 
             builder.Services.AddEndpointsApiExplorer();

@@ -33,7 +33,6 @@ namespace CompanyNewsAPI.Repositories
             {
                 return new List<Post>();
             }
-
             return await _dataContext.Posts.Where(user => user.UserId == id).ToListAsync();
         }
 
